@@ -23,5 +23,5 @@
 ![img_2.png](img_2.png)
 
 Ссылки:
-ссылка на репозиторий:
-ссылка непосредственно на apk:
+ссылка на репозиторий: https://github.com/FismanMaxim/MIPT_Flutter_Homework1
+ссылка непосредственно на apk: 
