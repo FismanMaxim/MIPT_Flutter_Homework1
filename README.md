@@ -25,4 +25,4 @@
 
 Ссылки:
 ссылка на репозиторий: https://github.com/FismanMaxim/MIPT_Flutter_Homework1
-ссылка непосредственно на apk: 
+ссылка непосредственно на apk: https://github.com/FismanMaxim/MIPT_Flutter_Homework1/blob/master/output/app-release.apk
