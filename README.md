@@ -19,8 +19,9 @@
 
 Примеры изображения интерфейса приложения:
 
+![img.png](img.png)
 ![img_1.png](img_1.png)
-![img_2.png](img_2.png)
+
 
 Ссылки:
 ссылка на репозиторий: https://github.com/FismanMaxim/MIPT_Flutter_Homework1
