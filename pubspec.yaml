@@ -19,7 +19,15 @@ dev_dependencies:
   flutter_lints: ^5.0.0
   http: ^1.1.0
   cached_network_image: ^3.2.3
+  flutter_launcher_icons: ^0.9.0
 
 flutter:
-
   uses-material-design: true
+  assets:
+    - assets/icon/
+
+flutter_icons:
+  image_path: "assets/icon/app_icon.jpg"
+  android: true
+  ios: false
+  min_sdk_android: 21
