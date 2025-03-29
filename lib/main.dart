@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:tinder_cats/screens/main_screen.dart';
+import 'package:tinder_cats/di/locator.dart';
+import 'presentation/screens/main_screen.dart';
 
 void main() {
+  setupLocator();
   runApp(CatTinderApp());
 }
 
