@@ -10,6 +10,8 @@ build/*
 !build/app
 build/app/*
 !build/app/outputs
+build/app/outputs/*
+!build/app/outputs/apk
 .history
 .svn/
 .swiftpm/
