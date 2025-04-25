@@ -6,16 +6,12 @@
 .DS_Store
 .atom/
 .buildlog/
-build/*
-!build/app
-build/app/*
-!build/app/outputs
-build/app/outputs/*
-!build/app/outputs/apk
+build
 .history
 .svn/
 .swiftpm/
 migrate_working_dir/
+
 
 # IntelliJ related
 *.iml
