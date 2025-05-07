@@ -9,8 +9,7 @@
   <img src="screenshots/details.jpg" width="30%" alt="Детали котика"/>
   <img src="screenshots/clear_dialog.jpg" width="30%" alt="Экран удаления понравившихся котиков"/>
   <img src="screenshots/empty_likes.jpg" width="30%" alt="Empty-state экран понравившихся котиков"/>
-  <img src="screenshots/empty_likes.jpg" width="30%" alt="Empty-state экран понравившихся котиков"/>
-  <img src="screenshots/no_connection.jpg" width="30%" alt="Нет соединения"/>
+  <img src="screenshots/no_connection.png" width="30%" alt="Нет соединения"/>
 </div>
 
 ## 🌟 Основные функции
