@@ -20,6 +20,8 @@ class MainScreen extends StatefulWidget {
 class MainScreenState extends State<MainScreen> {
   final CatService _catService = Injector.catService;
   final LikedCatsService _likedCatsService = Injector.likedCatsService;
+
+  final List<Cat> _catQueue = [];
   Cat? _currentCat;
   bool _isNetworkError = false;
 
@@ -30,42 +32,73 @@ class MainScreenState extends State<MainScreen> {
   }
 
   Future<void> _loadNextCat() async {
+    if (_catQueue.isNotEmpty) {
+      setState(() {
+        _currentCat = _catQueue.removeAt(0);
+      });
+      return;
+    }
+
+    final hasConnection = await NetworkUtils.hasInternetConnection();
+    if (!hasConnection) {
+      if (!mounted) return;
+
+      setState(() {
+        _isNetworkError = true;
+        _currentCat = null;
+      });
+
+      if (_catQueue.isEmpty && _currentCat == null) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('No internet connection.'),
+            duration: Duration(seconds: 4),
+          ),
+        );
+      }
+      return;
+    }
+
+    setState(() => _isNetworkError = false);
+
     try {
-      final hasConnection = await NetworkUtils.hasInternetConnection();
-      if (!hasConnection) {
-        setState(() => _isNetworkError = true);
-        return;
+      if (_catQueue.length < 5) {
+        List<Cat> newCats = await _catService
+            .fetchRandomCats(5)
+            .timeout(const Duration(seconds: 3));
+
+        if (!mounted) return;
+
+        for (final cat in newCats) {
+          precacheImage(CachedNetworkImageProvider(cat.url), context);
+        }
+
+        setState(() {
+          _catQueue.addAll(newCats);
+        });
       }
 
-      setState(() => _isNetworkError = false);
-      Cat? newCat = await _catService.fetchRandomCat();
-      if (mounted) {
-        setState(() => _currentCat = newCat);
+      if (_currentCat == null && _catQueue.isNotEmpty) {
+        if (!mounted) return;
+        setState(() {
+          _currentCat = _catQueue.removeAt(0);
+        });
       }
     } catch (e) {
-      if (mounted) {
-        setState(() => _isNetworkError = true);
+      if (!mounted) return;
+      setState(() => _isNetworkError = true);
+
+      if (_catQueue.isEmpty && _currentCat == null) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('No internet connection.'),
+            duration: Duration(seconds: 4),
+          ),
+        );
       }
     }
-  }
-
-  void _showNetworkErrorDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('No Internet Connection'),
-        content: const Text('Please check your network and try again'),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              _loadNextCat();
-            },
-            child: const Text('Retry'),
-          ),
-        ],
-      ),
-    );
   }
 
   void _handleSwipe(DragEndDetails details) {
@@ -77,9 +110,9 @@ class MainScreenState extends State<MainScreen> {
   }
 
   void _handleLike() {
-    setState(() {
+    if (_currentCat != null) {
       _likedCatsService.addLikedCat(_currentCat!);
-    });
+    }
     _loadNextCat();
   }
 
@@ -100,12 +133,6 @@ class MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (_isNetworkError && _currentCat == null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _showNetworkErrorDialog();
-      });
-    }
-
     return Scaffold(
       appBar: AppBar(
         title: Text('Cat Tinder'),
@@ -128,50 +155,66 @@ class MainScreenState extends State<MainScreen> {
           ),
         ],
       ),
-      body: _currentCat == null
-          ? Center(child: CircularProgressIndicator())
-          : _catCard(),
+      body: _isNetworkError
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'No internet connection',
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.red,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  ElevatedButton(
+                    onPressed: _loadNextCat,
+                    child: Text('Retry'),
+                  ),
+                ],
+              ),
+            )
+          : _currentCat == null
+              ? Center(child: CircularProgressIndicator())
+              : _catCard(),
     );
   }
 
-  GestureDetector _catCard() {
-    return GestureDetector(
-      onHorizontalDragEnd: _handleSwipe,
-      child: Expanded(
-        child: Column(
-          children: [
-            Expanded(
-              child: GestureDetector(
-                onTap: _navigateToDetailScreen,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    CachedNetworkImage(
-                      imageUrl: _currentCat!.url,
-                      placeholder: (context, url) =>
-                          CircularProgressIndicator(),
-                      errorWidget: (context, url, error) => Icon(Icons.error),
-                    ),
-                    SizedBox(height: 7),
-                    Text(
-                      _currentCat!.breedName,
-                      style:
-                          TextStyle(fontSize: 25, fontWeight: FontWeight.w400),
-                    )
-                  ],
-                ),
+  Widget _catCard() {
+    return Column(
+      children: [
+        Expanded(
+          child: GestureDetector(
+            onHorizontalDragEnd: _handleSwipe,
+            child: GestureDetector(
+              onTap: _navigateToDetailScreen,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CachedNetworkImage(
+                    imageUrl: _currentCat!.url,
+                    placeholder: (context, url) => CircularProgressIndicator(),
+                    errorWidget: (context, url, error) => Icon(Icons.error),
+                  ),
+                  SizedBox(height: 7),
+                  Text(
+                    _currentCat!.breedName,
+                    style: TextStyle(fontSize: 25, fontWeight: FontWeight.w400),
+                  ),
+                ],
               ),
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                LikeButton(onPressed: _handleDislike, isLike: false),
-                LikeButton(onPressed: _handleLike, isLike: true),
-              ],
-            ),
+          ),
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            LikeButton(onPressed: _handleDislike, isLike: false),
+            LikeButton(onPressed: _handleLike, isLike: true),
           ],
         ),
-      ),
+      ],
     );
   }
 }

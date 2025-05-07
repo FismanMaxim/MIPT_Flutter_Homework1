@@ -22,4 +22,22 @@ class Cat {
       temperament: json['breeds'][0]['temperament'],
     );
   }
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'url': url,
+        'breedName': breedName,
+        'description': description,
+        'temperament': temperament,
+      };
+
+  static Cat fromSimpleJson(Map<String, dynamic> json) {
+    return Cat(
+      id: json['id'],
+      url: json['url'],
+      breedName: json['breedName'],
+      description: json['description'],
+      temperament: json['temperament'],
+    );
+  }
 }
