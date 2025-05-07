@@ -18,7 +18,8 @@ void main() {
   });
 
   group('CatService', () {
-    test('fetchRandomCats returns list of Cat when response is successful', () async {
+    test('fetchRandomCats returns list of Cat when response is successful',
+        () async {
       // Arrange
       const mockCatId = 'abc123';
       final catSearchResponse = jsonEncode([
@@ -36,7 +37,6 @@ void main() {
           }
         ]
       });
-
 
       // Mock the first call (search)
       when(mockClient.get(Uri.parse(

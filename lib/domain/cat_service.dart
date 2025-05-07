@@ -28,7 +28,7 @@ class CatService {
 
     final List<dynamic> jsons = json.decode(response.body);
     final List<Future<Cat>> futures =
-    jsons.map((json) => fetchCatDetails(json['id'])).toList();
+        jsons.map((json) => fetchCatDetails(json['id'])).toList();
 
     return Future.wait(futures);
   }

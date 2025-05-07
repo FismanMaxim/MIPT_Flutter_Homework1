@@ -5,15 +5,25 @@ import 'package:tinder_cats/domain/liked_cats_service.dart';
 
 void main() {
   late LikedCatsService service;
-  final mockPrefsData = <String, Object>{};
 
-  final cat1 = Cat(id: '1', description: "", url: 'url1', breedName: 'Siamese', temperament: 'Playful');
-  final cat2 = Cat(id: '2', description: "", url: 'url2', breedName: 'Persian', temperament: 'Calm');
+  final cat1 = Cat(
+      id: '1',
+      description: "",
+      url: 'url1',
+      breedName: 'Siamese',
+      temperament: 'Playful');
+  final cat2 = Cat(
+      id: '2',
+      description: "",
+      url: 'url2',
+      breedName: 'Persian',
+      temperament: 'Calm');
 
   setUp(() async {
     SharedPreferences.setMockInitialValues({});
     service = LikedCatsService();
-    await Future.delayed(const Duration(milliseconds: 10)); // wait for _loadFromStorage
+    await Future.delayed(
+        const Duration(milliseconds: 10)); // wait for _loadFromStorage
   });
 
   test('initial list is empty', () {
